@@ -1,5 +1,5 @@
 sudo apt update
 
-sudo apt-get install qemu-system
+sudo apt-get install qemu-system -y
 
-sudo apt-get install virt-manager
+sudo apt-get install virt-manager -y
