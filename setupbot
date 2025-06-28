@@ -1,4 +1,5 @@
 #!/bin/bash
+termux-setup-storage && yes
 pkg update -y
 pkg upgrade -y
 pkg install python git
