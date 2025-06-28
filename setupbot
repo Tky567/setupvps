@@ -2,3 +2,5 @@
 pkg update -y
 pkg upgrade -y
 pkg install python git
+pip install -U pip
+pip install -U discord.py
