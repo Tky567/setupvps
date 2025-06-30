@@ -13,7 +13,7 @@ mkdir -p ~/discord-tool
 cd ~/discord-tool
 
 echo "📥 Đang tải file.py từ GitHub..."
-curl -sL -o file.py "https://raw.githubusercontent.com/Tky567/setupvps/main/file.py"
+curl -sL -o file.py "https://raw.githubusercontent.com/Tky567/setupvps/refs/heads/main/file.py"
 
 touch user_ids.txt
 touch blacklist.txt
