@@ -14,7 +14,7 @@ echo "[✓] Đang cài các gói cần thiết..."
 pkg install -y wget unzip python git
 
 echo "[✓] Đang cài thư viện Python..."
-pip install -U pip
+pkg install python-pip -y
 pip install -U discord.py python-dotenv
 
 echo "[✓] Đang tải bot về..."
