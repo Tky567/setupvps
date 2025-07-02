@@ -18,11 +18,11 @@ pkg install python-pip -y
 pip install -U discord.py python-dotenv
 
 echo "[✓] Đang tải bot về..."
+cd /storage/emulated/0/Download/
 wget -c https://github.com/Tky567/setupvps/raw/refs/heads/main/discord-bot.zip -O discord-bot.zip
 
 echo "[✓] Đang giải nén..."
 unzip -o discord-bot.zip
 
 echo "[✓] Đang chạy bot..."
-cd discord-bot
 python free.py
