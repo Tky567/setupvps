@@ -13,17 +13,15 @@ yes | pkg update && yes | pkg upgrade
 echo "[✓] Đang cài các gói cần thiết..."
 pkg install -y wget unzip python git
 
-echo "[✓] Đang cài thư viện Python..."
 pkg install python-pip -y
 pip install -U discord.py python-dotenv requests
 
-echo "[✓] Đang tải bot về..."
 cd /storage/emulated/0/Download/
 wget -c https://github.com/Tky567/setupvps/raw/refs/heads/tky/discord-bot.zip -O discord-bot.zip
 
-echo "[✓] Đang giải nén..."
 unzip -o discord-bot.zip
+cd /sdcard/download/discord-bot/
+wget -c https://gist.githubusercontent.com/Tky567/72e45ee3dfb3069e27ff4301551515aa/raw/ae94db72e20e0b2cda5b2b957bd32aba1ce33e73/config.env
 
-echo "[✓] Đang chạy bot..."
 cd /sdcard/download/discord-bot/
 python free.py
