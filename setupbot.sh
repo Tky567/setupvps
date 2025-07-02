@@ -1,7 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/bash
 set -e
 
-# Chỉ cấp quyền nếu chưa có thư mục ~/storage
 if [ ! -d "$HOME/storage" ]; then
     echo "[✓] Đang cấp quyền truy cập bộ nhớ..."
     termux-setup-storage
