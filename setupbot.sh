@@ -1,9 +1,11 @@
 #!/data/data/com.termux/files/usr/bin/bash
-
 set -e
 
-echo "[✓] Đang cấp quyền truy cập bộ nhớ..."
-termux-setup-storage
+# Chỉ cấp quyền nếu chưa có thư mục ~/storage
+if [ ! -d "$HOME/storage" ]; then
+    echo "[✓] Đang cấp quyền truy cập bộ nhớ..."
+    termux-setup-storage
+fi
 
 echo "[✓] Đang cập nhật hệ thống..."
 yes | pkg update && yes | pkg upgrade
@@ -22,5 +24,5 @@ echo "[✓] Đang giải nén..."
 unzip -o discord-bot.zip
 
 echo "[✓] Đang chạy bot..."
-cd /storage/emulated/0/Download/
+cd discord-bot
 python free.py
