@@ -4,7 +4,7 @@ pkg update -y
 pkg upgrade -y
 pkg install unzip -y
 pkg install wget -y
-pkg install python git
+pkg install python git -y
 pip install -U pip
 pip install -U discord.py
 pip install python-dotenv
