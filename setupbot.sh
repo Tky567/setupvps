@@ -6,10 +6,8 @@ if [ ! -d "$HOME/storage" ]; then
     termux-setup-storage
 fi
 
-echo "[✓] Đang cập nhật hệ thống..."
 yes | pkg update && yes | pkg upgrade
 
-echo "[✓] Đang cài các gói cần thiết..."
 pkg install -y wget unzip python git
 
 pkg install python-pip -y
