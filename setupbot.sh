@@ -1,10 +1,10 @@
 #!/bin/bash
-termux-setup-storage && yes
-pkg update && yes
-pkg upgrade && yes
-pkg install unzip && yes
-pkg install wget && yes
-pkg install python git && yes
+termux-setup-storage && yes |
+pkg update && yes |
+pkg upgrade && yes |
+pkg install unzip && yes |
+pkg install wget && yes |
+pkg install python git && yes |
 pip install -U pip
 pip install -U discord.py
 pip install python-dotenv
