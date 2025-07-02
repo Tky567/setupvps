@@ -22,5 +22,5 @@ echo "[✓] Đang giải nén..."
 unzip -o discord-bot.zip
 
 echo "[✓] Đang chạy bot..."
-cd /sdcard/download/
+cd /storage/emulated/0/Download/
 python free.py
