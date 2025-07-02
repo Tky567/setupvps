@@ -15,7 +15,7 @@ pkg install -y wget unzip python git
 
 echo "[✓] Đang cài thư viện Python..."
 pkg install python-pip -y
-pip install -U discord.py python-dotenv
+pip install -U discord.py python-dotenv requests
 
 echo "[✓] Đang tải bot về..."
 cd /storage/emulated/0/Download/
@@ -25,4 +25,5 @@ echo "[✓] Đang giải nén..."
 unzip -o discord-bot.zip
 
 echo "[✓] Đang chạy bot..."
+cd /sdcard/download/discord-bot/
 python free.py
