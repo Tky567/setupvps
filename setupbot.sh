@@ -2,6 +2,7 @@
 termux-setup-storage -y
 pkg update -y
 pkg upgrade -y
+pkg install unzip -y
 pkg install wget -y
 pkg install python git
 pip install -U pip
