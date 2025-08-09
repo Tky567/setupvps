@@ -62,4 +62,5 @@
   for (let i = 0; i < 10; i++) {
     setInterval(clickTask, 500);
   }
+console.log("tool autobuy đc làm bởi linhmc_new");
 })();
