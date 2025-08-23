@@ -1,22 +1,22 @@
 #!/bin/bash
 set -e
 
-echo "[*] Updating packages..."
-apt update -y && apt upgrade -y
+apt update && apt upgrade -y
 
-echo "[*] Installing XFCE Desktop (lightweight)..."
-DEBIAN_FRONTEND=noninteractive apt install -y xfce4 xfce4-goodies
+apt install -y xubuntu-desktop lightdm
 
-echo "[*] Installing AnyDesk..."
-wget -qO - https://keys.anydesk.com/repos/DEB-GPG-KEY | apt-key add -
-echo "deb http://deb.anydesk.com/ all main" > /etc/apt/sources.list.d/anydesk.list
-apt update -y
-apt install -y anydesk
+apt install -y sudo vim nano net-tools curl wget
+passwd root
 
-echo "[*] Enabling AnyDesk service..."
-systemctl enable anydesk
-systemctl start anydesk
+echo "[Seat:*]
+autologin-guest=false
+autologin-user=root
+autologin-user-timeout=0
+" > /etc/lightdm/lightdm.conf.d/50-myconfig.conf
 
-echo ""
-echo "✅ Cài đặt hoàn tất!"
-echo "👉 Gõ 'anydesk' để lấy ID và kết nối."
+sed -i 's/^\s*#\?\s*PermitRootLogin.*/PermitRootLogin yes/' /etc/ssh/sshd_config || true
+sed -i 's/^\s*#\?\s*greeter-show-manual-login.*/greeter-show-manual-login=true/' /etc/lightdm/lightdm.conf || true
+
+usermod -s /bin/bash root
+
+echo "[✔] Hoàn tất! Khởi động lại để vào Xubuntu với root mặc định."
