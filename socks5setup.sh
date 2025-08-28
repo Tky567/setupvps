@@ -1,16 +1,15 @@
 #!/bin/bash
 set -e
 
-read -p "Nhập username cho proxy [proxyuser]: " PROXY_USER
-read -s -p "Nhập password cho proxy [proxypass]: " PROXY_PASS
+read -p "Nhập username cho proxy mặc định là [proxyuser]: " PROXY_USER
+read -s -p "Nhập password cho proxy mặc định là [proxypass]: " PROXY_PASS
 echo
-read -p "Nhập port cho proxy [1080]: " PROXY_PORT
+read -p "Nhập port cho proxy mặc định là [1080]: " PROXY_PORT
 
 PROXY_USER=${PROXY_USER:-proxyuser}
 PROXY_PASS=${PROXY_PASS:-proxypass}
 PROXY_PORT=${PROXY_PORT:-1080}
 
-echo "[+] Cài Dante server..."
 apt update -y
 apt install dante-server -y
 
@@ -46,6 +45,8 @@ ufw allow $PROXY_PORT/tcp || true
 
 systemctl restart danted
 systemctl enable danted
+
+clear
 
 IP=$(curl -s ifconfig.me || echo "$IP")
 echo
