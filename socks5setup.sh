@@ -52,7 +52,8 @@ IP=$(curl -s ifconfig.me || echo "$IP")
 echo
 echo "======================================"
 echo " SOCKS5 Proxy đã sẵn sàng!"
-echo " Địa chỉ:  $IP:$PROXY_PORT"
-echo " User:     $PROXY_USER"
-echo " Password: $PROXY_PASS"
+echo " Ip:  $IP:$PROXY_PORT"
+echo " User: $PROXY_USER"
+echo " Pass: $PROXY_PASS"
+echo " full: socks5:$PROXY_USER:$PROXY_PASS:$IP:$PROXY_PORT"
 echo "======================================"
