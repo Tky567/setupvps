@@ -1,25 +1,26 @@
 #!/bin/bash
 set -e
 
-echo "🔄 Cập nhật hệ thống và gỡ GUI cũ + cloudflared..."
+echo "🔄 Cập nhật hệ thống và gỡ bỏ mọi GUI cũ + cloudflared..."
 apt update -y
-apt purge -y xfce4 xfce4-goodies ubuntu-desktop gnome-shell kde-plasma-desktop cloudflared || true
+apt purge -y xfce4 xfce4-goodies lubuntu-desktop lxqt* ubuntu-desktop gnome-shell kde-plasma-desktop cloudflared || true
 apt autoremove -y
 
-echo "💻 Cài Lubuntu (LXQt) + VNC + noVNC..."
-apt install -y curl lubuntu-desktop tigervnc-standalone-server novnc websockify
+echo "💻 Cài Ubuntu MATE + VNC + noVNC..."
+apt install -y curl ubuntu-mate-desktop tigervnc-standalone-server novnc websockify
 
-echo "🛠️ Cấu hình VNC để chạy LXQt..."
+echo "🛠️ Cấu hình VNC để chạy MATE..."
 mkdir -p ~/.vnc
 cat > ~/.vnc/xstartup <<'EOF'
 #!/bin/bash
 xrdb $HOME/.Xresources
-startlxqt &
+mate-session &
 EOF
 chmod +x ~/.vnc/xstartup
 
 echo "🚀 Khởi động lại VNC..."
 vncserver -kill :1 >/dev/null 2>&1 || true
+rm -rf ~/.vnc/*.log ~/.vnc/*.pid
 vncserver :1 -geometry 1280x720 -depth 24
 
 echo "🌐 Khởi động noVNC..."
