@@ -1,11 +1,13 @@
 #!/bin/bash
 
-# Puppeteer Chrome Fix for GitHub Codespaces
+# Puppeteer Chrome Fix for GitHub Codespaces (Optimized)
 # Author: Assistant
-# Description: Automatically detect and configure Chrome/Chromium for Puppeteer
+# Description: Auto-setup Chrome/Chromium for Puppeteer in Codespaces with sudo access
 
-echo "🚀 Starting Puppeteer Chrome setup for GitHub Codespaces..."
-echo "=================================================="
+set -e  # Exit on any error
+
+echo "🚀 Puppeteer Chrome Setup for GitHub Codespaces"
+echo "==============================================="
 
 # Function to check if command exists
 command_exists() {
@@ -44,38 +46,43 @@ else
     # Step 2: Try to install Chrome (if we have permissions)
     echo "🔧 Step 2: Attempting to install Google Chrome..."
     
-    if command_exists sudo; then
-        # Try installing Chrome with sudo
-        echo "📦 Installing Chrome with sudo permissions..."
-        wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo apt-key add - 2>/dev/null
-        echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google-chrome.list >/dev/null 2>&1
-        sudo apt update >/dev/null 2>&1
-        sudo apt install -y google-chrome-stable >/dev/null 2>&1
+    # GitHub Codespaces has sudo with nopasswd by default
+    echo "📦 Installing Chrome (Codespaces has sudo access)..."
+    
+    # Install Chrome directly
+    wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
+    echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google-chrome.list
+    sudo apt update
+    sudo apt install -y google-chrome-stable
         
         BROWSER_PATH=$(find_browser)
         if [ $? -eq 0 ]; then
             echo "✅ Chrome installed successfully at: $BROWSER_PATH"
         else
-            echo "❌ Chrome installation failed with sudo"
+            echo "⚠️ Chrome installation completed but executable not found in expected locations"
+            # Try to find it in alternative locations
+            CHROME_ALT=$(which google-chrome-stable 2>/dev/null || which google-chrome 2>/dev/null)
+            if [ -n "$CHROME_ALT" ]; then
+                BROWSER_PATH="$CHROME_ALT"
+                echo "✅ Found Chrome at: $BROWSER_PATH"
+            fi
         fi
-    else
-        echo "❌ No sudo permissions available"
-    fi
     
-    # Step 3: Try Puppeteer's bundled Chromium
+    # Step 3: Fallback to Puppeteer's bundled Chromium if Chrome install failed
     if [ -z "$BROWSER_PATH" ]; then
-        echo "🔧 Step 3: Trying to use Puppeteer's bundled Chromium..."
+        echo "🔧 Step 3: Trying Puppeteer's bundled Chromium as fallback..."
         
-        # Check if we can use npx
+        # Try installing Chrome via Puppeteer
         if command_exists npx; then
-            echo "📦 Installing Chrome via Puppeteer..."
-            npx puppeteer browsers install chrome 2>/dev/null
+            echo "📦 Installing Chrome via Puppeteer (this may take a moment)..."
+            npx puppeteer browsers install chrome
             
             # Check Puppeteer cache directories
             PUPPETEER_DIRS=(
                 "$HOME/.cache/puppeteer"
                 "$HOME/.local/share/puppeteer"
                 "node_modules/puppeteer/.local-chromium"
+                "./node_modules/puppeteer/.local-chromium"
             )
             
             for dir in "${PUPPETEER_DIRS[@]}"; do
