@@ -3,29 +3,6 @@
 set -e  # dừng nếu có lỗi
 
 # =============================
-# 1. Kiểm tra Internet
-# =============================
-echo "==> Kiểm tra kết nối Internet..."
-ping -c 1 google.com >/dev/null 2>&1 || {
-    echo "❌ Không có kết nối Internet!"
-    exit 1
-}
-echo "[OK] Internet hoạt động!"
-sleep 1
-
-# =============================
-# 2. Kiểm tra curl
-# =============================
-echo "==> Kiểm tra curl..."
-if ! command -v curl >/dev/null 2>&1; then
-    echo "curl chưa có — đang cài đặt..."
-    sudo apt update
-    sudo apt install -y curl
-fi
-echo "[OK] curl đã sẵn sàng!"
-sleep 1
-
-# =============================
 # 3. Kiểm tra gpg
 # =============================
 echo "==> Kiểm tra gpg..."
