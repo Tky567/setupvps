@@ -2,35 +2,26 @@ FROM --platform=linux/amd64 debian:12
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-RUN apt update -y && apt full-upgrade -y
+# Update và cài Docker bên trong image
+RUN apt update -y && \
+    apt upgrade -y && \
+    apt install -y docker.io curl wget
 
-# Make sure systemd/dbus exists (required for hostnamectl)
-RUN apt install -y dbus systemd systemd-sysv
+# Tạo container Proxmox FAKE khi image chạy
+RUN mkdir -p /proxmox-start
 
-RUN hostnamectl set-hostname pve.local
-RUN echo "127.0.1.1 pve.local pve" >> /etc/hosts
+# Script khởi động Proxmox UI container
+RUN printf "#!/bin/bash\n\
+docker rm -f proxmoxve >/dev/null 2>&1 || true\n\
+docker run -itd --name proxmoxve --hostname pve \\\n\
+  -p 8006:8006 --privileged rtedpro/proxmox:8.4.x\n\
+docker logs proxmoxve\n\
+tail -f /dev/null\n" > /proxmox-start/start.sh
 
-RUN echo "deb http://download.proxmox.com/debian/pve bookworm pve-no-subscription" \
-    > /etc/apt/sources.list.d/pve-install-repo.list
+RUN chmod +x /proxmox-start/start.sh
 
-RUN wget -qO- https://enterprise.proxmox.com/debian/proxmox-release-bookworm.gpg \
-    | gpg --dearmor -o /etc/apt/trusted.gpg.d/proxmox-release-bookworm.gpg
-
-RUN apt update -y
-
-RUN apt install -y proxmox-ve postfix open-iscsi chrony
-
-RUN rm -f /etc/apt/sources.list.d/pve-enterprise.list
-
-RUN apt update -y
-
-RUN systemctl enable pvedaemon
-RUN systemctl enable pve-cluster
-RUN systemctl enable pve-manager
-
-RUN systemctl restart pvedaemon
-RUN systemctl restart pve-cluster
-RUN systemctl restart pve-manager
-
+# Mở port giống như bản của bạn
 EXPOSE 8006
-EXPOSE 22
+
+# Khi container được chạy → start Proxmox UI container bên trong
+CMD ["/proxmox-start/start.sh"]
