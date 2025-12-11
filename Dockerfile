@@ -4,31 +4,46 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt update -y && apt upgrade -y
 
+# ----------------------
+# Cài LXQT Desktop + VNC + noVNC
+# ----------------------
 RUN apt install --no-install-recommends -y \
-    lxqt-core lxqt-panel lxqt-session \
+    lxqt-core lxqt-session lxqt-panel \
     xorg x11-xserver-utils x11-apps \
     tigervnc-standalone-server \
     novnc websockify \
     sudo curl wget git vim net-tools dbus-x11
 
-RUN apt install -y xfonts-base
+# ----------------------
+# Tạo user "gui" giống như file Docker GUI gốc tạo user để chạy VNC
+# ----------------------
+RUN useradd -m -s /bin/bash gui && echo "gui:gui" | chpasswd && adduser gui sudo
 
-# Tạo file cấu hình VNC start LXQT
-RUN mkdir -p /root/.vnc && \
-    printf "#!/bin/bash\nstartlxqt &\n" > /root/.vnc/xstartup && \
-    chmod +x /root/.vnc/xstartup
+USER gui
+ENV HOME=/home/gui
 
-# Password VNC mặc định: 123456
-RUN echo "123456" | vncpasswd -f > /root/.vnc/passwd && chmod 600 /root/.vnc/passwd
+# ----------------------
+# Chuẩn bị thư mục VNC
+# ----------------------
+RUN mkdir -p /home/gui/.vnc
 
-# Link noVNC web frontend
+# Script chạy LXQT khi VNC start
+RUN printf "#!/bin/bash\nstartlxqt &\n" > /home/gui/.vnc/xstartup && \
+    chmod +x /home/gui/.vnc/xstartup
+
+USER root
+
+# noVNC web page
 RUN ln -s /usr/share/novnc/vnc.html /usr/share/novnc/index.html
 
 EXPOSE 5901
 EXPOSE 6080
 
+# ----------------------
+# CMD — y hệt file Docker GUI gốc
+# ----------------------
 CMD bash -c "\
-vncserver -localhost no -SecurityTypes None -geometry 1280x720 ; \
+sudo -u gui vncserver -localhost no -SecurityTypes None -geometry 1280x720 ; \
 websockify --web=/usr/share/novnc/ 6080 localhost:5901 ; \
 tail -f /dev/null \
 "
