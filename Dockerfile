@@ -1,7 +1,6 @@
 FROM --platform=linux/amd64 ubuntu:24.04
 
 ENV DEBIAN_FRONTEND=noninteractive
-ENV DISPLAY=:1
 
 RUN apt update -y && apt upgrade -y
 
@@ -14,24 +13,19 @@ RUN apt install --no-install-recommends -y \
 
 RUN apt install -y xfonts-base
 
-# Create user
-RUN useradd -m -s /bin/bash gui && echo "gui:gui" | chpasswd && adduser gui sudo
-RUN chown -R gui:gui /home/gui
+# Prepare VNC configuration
+RUN mkdir -p /root/.vnc && \
+    printf "#!/bin/bash\nstartlxqt &\n" > /root/.vnc/xstartup && \
+    chmod +x /root/.vnc/xstartup
 
-USER gui
-ENV HOME=/home/gui
-
-RUN mkdir -p /home/gui/.vnc
-RUN printf "#!/bin/bash\nstartlxqt &\n" > /home/gui/.vnc/xstartup && chmod +x /home/gui/.vnc/xstartup
-
-USER root
-
+# Link noVNC index
 RUN ln -s /usr/share/novnc/vnc.html /usr/share/novnc/index.html
 
-# Railway uses dynamic port
-EXPOSE 8080
+EXPOSE 5901
+EXPOSE 6080
 
 CMD bash -c "\
-sudo -u gui vncserver -localhost no -SecurityTypes None -geometry 1280x720 && \
-websockify --web=/usr/share/novnc/ $PORT localhost:5901 \
+vncserver -localhost no -SecurityTypes None --I-KNOW-THIS-IS-INSECURE -geometry 1280x720 ; \
+websockify --web=/usr/share/novnc/ 6080 localhost:5901 ; \
+tail -f /dev/null \
 "
