@@ -1,14 +1,34 @@
-FROM --platform=linux/amd64 debian:12
+FROM --platform=linux/amd64 ubuntu:24.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-RUN apt update -y && apt upgrade -y && \
-    apt install -y docker.io curl wget
+RUN apt update -y && apt upgrade -y
 
-# Expose WebUI Proxmox fake
-EXPOSE 8006
+RUN apt install --no-install-recommends -y \
+    lxqt-core lxqt-panel lxqt-session \
+    xorg x11-xserver-utils x11-apps \
+    tigervnc-standalone-server \
+    novnc websockify \
+    sudo curl wget git vim net-tools dbus-x11
 
-# Khi container này khởi động → nó chạy ngay container Proxmox UI thật
-CMD docker run -itd --name proxmoxve --hostname pve \
-    -p 8006:8006 --privileged rtedpro/proxmox:8.4.x && \
-    tail -f /dev/null
+RUN apt install -y xfonts-base
+
+# Tạo file cấu hình VNC start LXQT
+RUN mkdir -p /root/.vnc && \
+    printf "#!/bin/bash\nstartlxqt &\n" > /root/.vnc/xstartup && \
+    chmod +x /root/.vnc/xstartup
+
+# Password VNC mặc định: 123456
+RUN echo "123456" | vncpasswd -f > /root/.vnc/passwd && chmod 600 /root/.vnc/passwd
+
+# Link noVNC web frontend
+RUN ln -s /usr/share/novnc/vnc.html /usr/share/novnc/index.html
+
+EXPOSE 5901
+EXPOSE 6080
+
+CMD bash -c "\
+vncserver -localhost no -SecurityTypes None -geometry 1280x720 ; \
+websockify --web=/usr/share/novnc/ 6080 localhost:5901 ; \
+tail -f /dev/null \
+"
