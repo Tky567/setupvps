@@ -1,24 +1,38 @@
 FROM --platform=linux/amd64 ubuntu:24.04
 
 ENV DEBIAN_FRONTEND=noninteractive
+ENV DISPLAY=:1
+ENV XDG_SESSION_TYPE=x11
 
 RUN apt update -y && apt upgrade -y
 
 RUN apt install --no-install-recommends -y \
     lxqt-core lxqt-session lxqt-panel \
+    openbox \
     xorg x11-xserver-utils x11-apps \
     tigervnc-standalone-server \
     novnc websockify \
-    sudo curl wget git vim net-tools dbus-x11
+    xauth dbus-x11 \
+    sudo curl wget git vim net-tools
 
 RUN apt install -y xfonts-base
 
-# Prepare VNC configuration
-RUN mkdir -p /root/.vnc && \
-    printf "#!/bin/bash\nstartlxqt &\n" > /root/.vnc/xstartup && \
-    chmod +x /root/.vnc/xstartup
+# Prepare VNC + LXQt startup
+RUN mkdir -p /root/.vnc
 
-# Link noVNC index
+RUN printf "#!/bin/bash\n\
+export USER=root\n\
+export HOME=/root\n\
+export DISPLAY=:1\n\
+export XAUTHORITY=/root/.Xauthority\n\
+export XDG_SESSION_TYPE=x11\n\
+touch /root/.Xauthority\n\
+eval $(dbus-launch --sh-syntax)\n\
+openbox &\n\
+lxqt-session &\n\
+" > /root/.vnc/xstartup && chmod +x /root/.vnc/xstartup
+
+# Create noVNC index
 RUN ln -s /usr/share/novnc/vnc.html /usr/share/novnc/index.html
 
 EXPOSE 5901
