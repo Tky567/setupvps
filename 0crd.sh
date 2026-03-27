@@ -2,6 +2,9 @@
 set -e
 trap 'echo "[ERROR] Dừng tại dòng $LINENO"' ERR
 
+# Buộc DISPLAY=:0 sớm cho toàn bộ session
+export DISPLAY=:0
+
 echo "=== LXQt + Chrome Remote Desktop installer (display :0) ==="
 
 # Kiểm tra curl
@@ -31,16 +34,29 @@ sudo apt install -y \
   qml-module-qtquick-window2
 
 # Khởi động Xvfb trên :0 nếu chưa có X server
+# (SSH session không có display vật lý nên cần tạo virtual display)
 if ! xdpyinfo -display :0 >/dev/null 2>&1; then
-  echo "[INFO] Không tìm thấy display :0, khởi động Xvfb..."
+  echo "[INFO] SSH session — không có display :0, khởi động Xvfb..."
   Xvfb :0 -screen 0 1920x1080x24 &
-  sleep 2
-  echo "[INFO] Xvfb đang chạy trên :0"
+  XVFB_PID=$!
+
+  # Chờ tối đa 10s cho đến khi :0 sẵn sàng
+  for i in $(seq 1 10); do
+    sleep 1
+    if xdpyinfo -display :0 >/dev/null 2>&1; then
+      echo "[INFO] Xvfb sẵn sàng (${i}s)"
+      break
+    fi
+    if [ "$i" -eq 10 ]; then
+      echo "[ERROR] Xvfb không khởi động được sau 10s"
+      exit 1
+    fi
+  done
 else
   echo "[INFO] Display :0 đã sẵn sàng"
 fi
 
-# Đảm bảo Xvfb tự start khi reboot
+# Tạo systemd service để Xvfb tự start sau reboot
 sudo tee /etc/systemd/system/xvfb.service > /dev/null << 'EOF'
 [Unit]
 Description=Xvfb virtual display :0
