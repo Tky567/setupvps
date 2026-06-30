@@ -20,19 +20,18 @@ try:
     sbs = Sandbox.list(api_key=key)
     if sbs:
         print(f"\n[!] You ALREADY HAVE an active Sandbox running!")
-        print(f"    - ID: {sbs[0].id}")
+        print(f"    - ID: {sbs[0].sandbox_id}")
         print(f"    - Status: {sbs[0].status}")
     else:
         print("\n[*] No active sandbox found. Creating a new one...")
         sb = None
-        # Loop trying maximum timeouts with the default 'code-interpreter' template
         for t in [2147483647, 604800, 86400]:
             try: sb = Sandbox.create(template="code-interpreter", api_key=key, timeout=t); break
             except: continue
         if not sb: sb = Sandbox.create(template="code-interpreter", api_key=key)
         
         print(f"[✓] New Sandbox VM created successfully!")
-        print(f"    - ID: {sb.id}")
+        print(f"    - ID: {sb.sandbox_id}")
 
     print("\n====================================================")
     print("[🎉] SUCCESS: Your VM is ready and running!")
