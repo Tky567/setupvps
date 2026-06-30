@@ -25,17 +25,18 @@ try:
     else:
         print("\n[*] No active sandbox found. Creating a new one...")
         sb = None
+        # Loop trying maximum timeouts with the default 'code-interpreter' template
         for t in [2147483647, 604800, 86400]:
-            try: sb = Sandbox.create(api_key=key, timeout=t); break
+            try: sb = Sandbox.create(template="code-interpreter", api_key=key, timeout=t); break
             except: continue
-        if not sb: sb = Sandbox.create(api_key=key)
+        if not sb: sb = Sandbox.create(template="code-interpreter", api_key=key)
         
-        print(f"[âœ“] New Sandbox VM created successfully!")
+        print(f"[✓] New Sandbox VM created successfully!")
         print(f"    - ID: {sb.id}")
 
     print("\n====================================================")
-    print("[đŸ‰] SUCCESS: Your VM is ready and running!")
-    print("[đŸ‘‰] Please return to the HopX Web Dashboard to use")
+    print("[🎉] SUCCESS: Your VM is ready and running!")
+    print("[👉] Please return to the HopX Web Dashboard to use")
     print("     the full-featured, interactive Web Terminal.")
     print("====================================================")
 
